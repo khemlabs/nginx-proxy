@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    container_name: nginx-proxy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - "${SSL_VOL:-ssl_certs}:/etc/nginx/certs"
+      - "${PROXY_VOL:-proxy_conf}:/etc/nginx/conf.d"
+      - "${VHOST_VOL:-vhosts_conf}:/etc/nginx/vhost.d"
+    environment:
+      - DEFAULT_HOST=local.khem.io
+  whoami:
+    image: jwilder/whoami
+    container_name: whoami
+    restart: always
+    environment:
+      - VIRTUAL_HOST=whoami.local
+
+volumes:
+ ssl_certs:
+ proxy_conf:
+ vhosts_conf:
