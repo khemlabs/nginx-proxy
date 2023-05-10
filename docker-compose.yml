@@ -38,7 +38,6 @@ volumes:
 
 networks:
  nginx:
-   drupal:
-     name: '${NETWORK_NAME:-default}'
-     external: '${NETWORK_EXTERNAL:-true}'
-     driver: '${NETWORK_DRIVER:-bind}'
+    name: '${NETWORK_NAME:-default}'
+    external: '${NETWORK_EXTERNAL:-true}'
+    driver: '${NETWORK_DRIVER:-bind}'
