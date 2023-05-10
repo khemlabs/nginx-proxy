@@ -16,7 +16,7 @@ services:
     networks:
       - nginx
   nginx-acme:
-    image: "nginxproxy/acme-companion:${TAG:-alpine}"
+    image: "nginxproxy/acme-companion:${TAG_ACME:-latest}"
     container_name: nginx-acme
     restart: always
     volumes:
