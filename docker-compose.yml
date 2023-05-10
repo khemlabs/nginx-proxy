@@ -1,8 +1,6 @@
-version: '3'
-
 services:
   nginx-proxy:
-    image: jwilder/nginx-proxy
+    image: "nginxproxy/nginx-proxy:${TAG:-alpine}"
     container_name: nginx-proxy
     restart: always
     ports:
@@ -10,19 +8,36 @@ services:
       - "443:443"
     volumes:
       - /var/run/docker.sock:/tmp/docker.sock:ro
-      - "${SSL_VOL:-ssl_certs}:/etc/nginx/certs"
-      - "${PROXY_VOL:-proxy_conf}:/etc/nginx/conf.d"
-      - "${VHOST_VOL:-vhosts_conf}:/etc/nginx/vhost.d"
+      - "${VOL_HTML:-html}:/usr/share/nginx/html"
+      - "${VOL_CERTS:-certs}:/etc/nginx/certs"
+      - "${VOL_VHOSTS:-vhosts}:/etc/nginx/vhost.d"
     environment:
-      - DEFAULT_HOST=local.khem.io
-  whoami:
-    image: jwilder/whoami
-    container_name: whoami
+      - DEFAULT_HOST="${HOST_DEFAULT:-local.khem.io}"
+    network:
+      - nginx
+  nginx-acme:
+    image: "nginxproxy/acme-companion:${TAG:-alpine}"
+    container_name: nginx-acme
     restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - "${VOL_HTML:-html}:/usr/share/nginx/html"
+      - "${VOL_CERTS:-certs}:/etc/nginx/certs"
+      - "${VOL_VHOSTS:-vhosts}:/etc/nginx/vhost.d"
+      - "${VOL_ACME:-acme}:/etc/acme.sh"
     environment:
-      - VIRTUAL_HOST=whoami.local
+      - DEFAULT_EMAIL="${EMAIL_DEFAULT:-ops@khemlab.com}"
+    network:
+      - nginx      
 
 volumes:
- ssl_certs:
- proxy_conf:
- vhosts_conf:
+ html:
+ certs:
+ vhosts:
+ acme:
+
+nginx:
+  drupal:
+    name: '${NETWORK_NAME:-default}'
+    external: '${NETWORK_EXTERNAL:-true}'
+    driver: '${NETWORK_DRIVER:-bind}'
