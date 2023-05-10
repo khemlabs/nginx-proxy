@@ -13,7 +13,7 @@ services:
       - "${VOL_VHOSTS:-vhosts}:/etc/nginx/vhost.d"
     environment:
       - DEFAULT_HOST="${HOST_DEFAULT:-local.khem.io}"
-    network:
+    networks:
       - nginx
   nginx-acme:
     image: "nginxproxy/acme-companion:${TAG:-alpine}"
@@ -27,7 +27,7 @@ services:
       - "${VOL_ACME:-acme}:/etc/acme.sh"
     environment:
       - DEFAULT_EMAIL="${EMAIL_DEFAULT:-ops@khemlab.com}"
-    network:
+    networks:
       - nginx      
 
 volumes:
@@ -36,8 +36,9 @@ volumes:
  vhosts:
  acme:
 
-nginx:
-  drupal:
-    name: '${NETWORK_NAME:-default}'
-    external: '${NETWORK_EXTERNAL:-true}'
-    driver: '${NETWORK_DRIVER:-bind}'
+networks:
+ nginx:
+   drupal:
+     name: '${NETWORK_NAME:-default}'
+     external: '${NETWORK_EXTERNAL:-true}'
+     driver: '${NETWORK_DRIVER:-bind}'
